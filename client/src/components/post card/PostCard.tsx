@@ -2,8 +2,8 @@ import homeImg from '../../assets/mainbg.png'
 
 const PostCard = () => {
   return (
-    <div className="duration-300 bg-white border border-teal-500 rounded 2xl:w-80 hover:scale-105 dark:bg-slate-950 w-72">
-      <img src={homeImg} alt="home" className='flex object-cover w-full h-64 rounded-t' /> 
+    <div className="duration-300 bg-white border border-teal-500 rounded hover:scale-105 dark:bg-slate-950">
+      <img src={homeImg} alt="home" className='flex object-cover w-full rounded-t sm:h-60 max-sm:h-44' /> 
       <div className='flex flex-col gap-5 p-2'>
         <h4 className='text-xl font-medium'>Tailwind css with react js</h4>
         <div className='flex items-center justify-between'>

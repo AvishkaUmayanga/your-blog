@@ -5,7 +5,7 @@ const LatestPosts = () => {
   return (
     <div className="flex flex-col gap-16 px-10 mt-40 md:px-20 2xl:px-44 dark:text-white">
       <h2 className="justify-around text-2xl font-semibold text-center ">Latest Posts</h2>
-      <div className="grid justify-between gap-y-16 lg:grid-cols-cols3 sm:grid-cols-cols2 max-sm:justify-center">
+      <div className="grid gap-10 gap-y-16 lg:grid-cols-3 sm:grid-cols-2 2xl:grid-cols-cols4">
         <PostCard/>
         <PostCard/>
         <PostCard/>
