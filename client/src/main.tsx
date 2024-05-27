@@ -12,6 +12,7 @@ import AboutPage from './components/about/AboutPage.tsx';
 import LoginPage from './components/login/LoginPage.tsx';
 import SignupPage from './components/signup/SignupPage.tsx';
 import DashBoard from './components/dashboard/DashBoard.tsx';
+import PostPage from './components/post/PostPage.tsx';
 
 const router = createBrowserRouter([
   {
@@ -41,6 +42,10 @@ const router = createBrowserRouter([
       {
         path:'dashboard',
         element: <DashBoard />
+      },
+      {
+        path:'post',
+        element: <PostPage />
       }
     ]
   },
