@@ -1,4 +1,5 @@
 import testImg from '../../assets/mainbg.png'
+
 const PostPage = () => {
   return (
     <div className="flex flex-col items-center w-full gap-10 px-10 py-16 dark:text-white">

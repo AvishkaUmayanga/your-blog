@@ -9,7 +9,7 @@ type sideBarProps ={
 }
 
 const SideBar = ({activeFunc, activeTab}: sideBarProps) => {
-  const buttonStyles = "flex items-center gap-3 p-3 font-medium rounded-md text-start dark:hover:bg-slate-700 hover:bg-slate-300 max-sm:p-2 max-sm:text-sm"
+  const buttonStyles = "flex items-center gap-3 p-3 font-medium rounded-md text-start dark:hover:bg-slate-700 hover:bg-slate-300 max-sm:p-2 max-sm:text-sm xl:w-56"
   return (
     <div className="flex flex-col w-48 gap-5 p-4 bg-slate-100 lg:w-56 xl:w-64 dark:bg-gray-900 max-sm:w-full max-sm:p-2 max-sm:text-sm">
       <div onClick={()=>{activeFunc('Profile')}} className={`${activeTab === 'Profile' ? 'dark:bg-slate-700 bg-slate-300' : '' } flex items-center justify-between p-3 rounded-md text-star dark:hover:bg-slate-700 hover:bg-slate-300 cursor-pointer`} >
