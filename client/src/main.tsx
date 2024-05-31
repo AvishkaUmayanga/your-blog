@@ -14,7 +14,8 @@ import SignupPage from './components/signup/SignupPage.tsx';
 import DashBoard from './components/dashboard/DashBoard.tsx';
 import PostPage from './components/post/PostPage.tsx';
 import { Provider } from 'react-redux';
-import store from './redux/store/store.ts'
+import {store, persistor} from './redux/store/store.ts'
+import { PersistGate } from 'redux-persist/integration/react';
 
 const router = createBrowserRouter([
   {
@@ -55,8 +56,10 @@ const router = createBrowserRouter([
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
-    <Provider store={store}>
-    <RouterProvider router={router} />
-    </Provider>
+    <PersistGate persistor={persistor}>
+      <Provider store={store}>
+        <RouterProvider router={router} />
+      </Provider>
+    </PersistGate>
   </React.StrictMode>
 )
