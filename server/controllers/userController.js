@@ -2,6 +2,7 @@ import userModel from "../models/userModel.js";
 import bcrypt from 'bcrypt'
 import jwt from 'jsonwebtoken'
 
+//signup
 export const signup = async(req, res) => {
     try{
         const {email, password, ...rest} = req.body
@@ -22,7 +23,7 @@ export const signup = async(req, res) => {
     }
 }
 
-//
+//signIn
 export const signIn = async(req, res) => {
     try{
         const {email, password} = req.body
@@ -38,8 +39,38 @@ export const signIn = async(req, res) => {
             else{
                 const user = {userId: existingUser._id, isAdmin: existingUser.isAdmin }
                 const token = jwt.sign(user, process.env.TOKEN_KEY)
-                return res.cookie('token', token, {httpOnly: true})
+                return res.cookie('token', token, { httpOnly: true }).status(200).json({ message: 'Login successfull' })
             }
+        }
+    }
+    catch(error){
+        return res.status(500).json({error: 'Server error'})
+    }
+}
+
+//google signin
+export const googleSignIn = async(req, res) => {
+    try{
+        const {email, userName, googleProfileImg} = req.body
+        const existingUser = await userModel.findOne({email})
+        if(existingUser){
+            const user = {userId: existingUser._id, isAdmin: existingUser.isAdmin}
+            const token = jwt.sign(user, process.env.TOKEN_KEY)
+            return res.cookie('token', token, {httpOnly: true}).status(200).json({ message: 'Login successfull' })
+        }
+        else{
+            const generatedPassword = process.env.TOKEN_KEY
+            const hashedPassword =  await bcrypt.hash(generatedPassword,10)
+            const newUser = new userModel({
+                userName: userName.toLowerCase(),
+                email,
+                password: hashedPassword,
+                profilePicture: googleProfileImg
+            })
+            await newUser.save()
+            const user = {userId: newUser._id, isAdmin: newUser.isAdmin}
+            const token = jwt.sign(user, process.env.TOKEN_KEY)
+            return res.cookie('token', token, {httpOnly: true}).status(200).json({ message: 'Login successfull' })
         }
     }
     catch(error){

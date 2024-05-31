@@ -1,9 +1,12 @@
 import { ChangeEvent,  FormEvent, useState } from "react";
-import { FcGoogle } from "react-icons/fc";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import OAuth from "../Oauth/OAuth";
+import { useSignInUserMutation } from "../../redux/api/userApi";
 
 const LoginPage = () => {
   const inputStyles = "block bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg  focus:outline-blue-400  w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white  dark:focus:outline-blue-500"
+  const navigate = useNavigate()
+  const [ loginUserData, {isError, error}] = useSignInUserMutation()
   interface LoginData{
     email: string,
     password: string,
@@ -26,7 +29,7 @@ const LoginPage = () => {
     setLoginData({...loginData, [name]: value})
   }
   
-  const handleSubmit = (e: FormEvent) =>{
+  const handleSubmit = async(e: FormEvent) =>{
     e.preventDefault()
     const validationErrors: Errors = {}
     if(!loginData.email.trim()){
@@ -36,9 +39,13 @@ const LoginPage = () => {
         validationErrors.password = 'please enter your password'
     }
     setErrors(validationErrors)
-    console.log(errors)
+
     if(Object.keys(validationErrors).length === 0) {
-      console.log(loginData);
+      const response = await loginUserData(loginData)
+      console.log(response)
+      if(response.data.message === 'Login successfull' ){
+        navigate('/')
+      }
     }
   }
   
@@ -61,13 +68,15 @@ const LoginPage = () => {
             <a href="#" className="text-sm font-medium text-blue-600 hover:underline dark:text-blue-500">Forgot password?</a>
           </div>
           <button type="submit" className="w-full text-white bg-blue-600 hover:bg-blue-700 focus:ring-2 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm  py-2.5 text-center dark:focus:ring-blue-800">Sign in</button>
-          <button type="submit" className="w-full border border-blue-300 hover:bg-blue-700 duration-200 dark:text-white focus:ring-2 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-base  py-2.5  dark:focus:ring-blue-800 flex justify-center items-center gap-1 group"><FcGoogle /> <p className=" group-hover:text-white">Continue with Google</p></button>
+          <OAuth />
           <p className="text-gray-500 dark:text-gray-400">
             Don&apos;t have an account yet? <Link to="/signup" className="font-medium text-blue-600 hover:underline dark:text-blue-500">Sign up</Link>
           </p>
+          { isError && 
           <div className="flex items-center justify-center w-full py-5 text-white bg-red-400 rounded">
-            <p>Error message is here</p>
+            <p>{error?.data?.message}</p>
           </div>
+          }
         </form>
       </div>
     </div>
