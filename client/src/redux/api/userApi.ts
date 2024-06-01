@@ -13,7 +13,14 @@ const userApi = createApi({
         }),
         signInUser: builder.mutation({
             query: (body) => ({
-                url: 'signIn',
+                url: '/signIn',
+                method: 'post',
+                body
+            })
+        }),
+        googleSignIn: builder.mutation({
+            query: (body) => ({
+                url: '/google',
                 method: 'post',
                 body
             })
@@ -21,5 +28,5 @@ const userApi = createApi({
     })
 })
 
-export const { useSignupUserMutation, useSignInUserMutation } = userApi
+export const { useSignupUserMutation, useSignInUserMutation, useGoogleSignInMutation } = userApi
 export default userApi

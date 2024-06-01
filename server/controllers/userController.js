@@ -59,8 +59,8 @@ export const googleSignIn = async(req, res) => {
             return res.cookie('token', token, {httpOnly: true}).status(200).json({ message: 'Login successfull' })
         }
         else{
-            const generatedPassword = process.env.TOKEN_KEY
-            const hashedPassword =  await bcrypt.hash(generatedPassword,10)
+            const generatedPassword =  process.env.TOKEN_KEY
+            const hashedPassword =  bcrypt.hash(generatedPassword,10)
             const newUser = new userModel({
                 userName: userName.toLowerCase(),
                 email,

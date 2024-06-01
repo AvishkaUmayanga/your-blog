@@ -2,10 +2,13 @@ import { ChangeEvent,  FormEvent, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import OAuth from "../Oauth/OAuth";
 import { useSignInUserMutation } from "../../redux/api/userApi";
+import { useDispatch } from "react-redux";
+import { signInSuccess } from "../../redux/slices/userSlice";
 
 const LoginPage = () => {
   const inputStyles = "block bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg  focus:outline-blue-400  w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white  dark:focus:outline-blue-500"
   const navigate = useNavigate()
+  const dispatch = useDispatch()
   const [ loginUserData, {isError, error}] = useSignInUserMutation()
   interface LoginData{
     email: string,
@@ -44,6 +47,7 @@ const LoginPage = () => {
       const response = await loginUserData(loginData)
       console.log(response)
       if(response.data.message === 'Login successfull' ){
+        dispatch(signInSuccess(true))
         navigate('/')
       }
     }
