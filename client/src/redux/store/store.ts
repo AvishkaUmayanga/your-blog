@@ -4,10 +4,12 @@ import userApi from "../api/userApi";
 import { persistReducer, persistStore }  from "redux-persist"
 import storage from "redux-persist/lib/storage";
 import userSliceReducer from "../slices/userSlice";
+import sideBarSliceReducer from "../slices/sideBarSlice";
 
 const rootReducer = combineReducers({
     postSlice: postSliceReducer,
     userSlice: userSliceReducer,
+    sideBarSlice: sideBarSliceReducer,
     [userApi.reducerPath]: userApi.reducer,
 })
 

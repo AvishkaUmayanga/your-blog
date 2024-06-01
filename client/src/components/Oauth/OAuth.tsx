@@ -3,10 +3,13 @@ import { FcGoogle } from "react-icons/fc";
 import { app } from "../../firebase";
 import { useGoogleSignInMutation } from "../../redux/api/userApi";
 import { useNavigate } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import { signInSuccess } from "../../redux/slices/userSlice";
 
 const OAuth = () => {
   const [signInData] = useGoogleSignInMutation()
   const navigate = useNavigate()
+  const dispatch = useDispatch()
   
   const handleGoogleSignIn = async() => {
     const auth = getAuth(app)
@@ -23,6 +26,7 @@ const OAuth = () => {
         
         const response = await signInData(userData)
         if(response.data.message === 'Login successfull'){
+          dispatch(signInSuccess(true))
           navigate('/')
         }
     }
