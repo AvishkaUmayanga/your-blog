@@ -3,9 +3,11 @@ import postSliceReducer from "../slices/postSlice";
 import userApi from "../api/userApi";
 import { persistReducer, persistStore }  from "redux-persist"
 import storage from "redux-persist/lib/storage";
+import userSliceReducer from "../slices/userSlice";
 
 const rootReducer = combineReducers({
     postSlice: postSliceReducer,
+    userSlice: userSliceReducer,
     [userApi.reducerPath]: userApi.reducer,
 })
 
