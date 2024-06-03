@@ -16,6 +16,8 @@ import PostPage from './components/post/PostPage.tsx';
 import { Provider } from 'react-redux';
 import {store, persistor} from './redux/store/store.ts'
 import { PersistGate } from 'redux-persist/integration/react';
+import PrivateRoutes from './components/private routes/PrivateRoutes.tsx';
+import 'react-toastify/dist/ReactToastify.css';
 
 const router = createBrowserRouter([
   {
@@ -44,7 +46,13 @@ const router = createBrowserRouter([
       },
       {
         path:'dashboard',
-        element: <DashBoard />
+        element: <PrivateRoutes />,
+        children: [
+          {
+            path:'',
+            element: <DashBoard />
+          },
+        ]
       },
       {
         path:'post',

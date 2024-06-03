@@ -1,14 +1,24 @@
-import { ChangeEvent, FormEvent, useState } from 'react'
-import testImg from '../../assets/userTest.png'
+import { ChangeEvent, FormEvent, useEffect, useRef, useState } from 'react'
 import SubmitButton from '../submit button/SubmitButton'
+import { useGetUserDetailsQuery, useUpdateUserMutation } from '../../redux/api/userApi'
+import { getStorage, uploadBytesResumable, getDownloadURL, ref } from "firebase/storage";
+import { app } from '../../firebase';
+import { ToastContainer, toast } from 'react-toastify';
 
 const ProfileSection = () => {
   const inputStyles = "block bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg  focus:outline-blue-400  w-full p-3 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white  dark:focus:outline-blue-500 max-sm:p-2"
+  
+  const { data: userData } = useGetUserDetailsQuery({})
+  const [imageFile, setImageFile] = useState<File >()
+  const [imageFileUrl, setImageFileUrl] = useState<string | null>(null)
+  const [userUpdateData] = useUpdateUserMutation()
+  const imageFileRef = useRef()
   
   interface UpdateData{
     userName: string,
     email: string,
     password: string,
+    profilePicture: string
   }
 
   interface InputErrors{
@@ -17,10 +27,53 @@ const ProfileSection = () => {
     password?: string
   }
   
+  const handleImageChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const file: File = e.target.files[0]
+    if(file){
+      setImageFile(file)
+      setImageFileUrl(URL.createObjectURL(file))
+    }
+  }
+
+  useEffect(()=>{
+    if(imageFile){
+      handleUploadImage()
+    }
+  },[imageFile])
+
+  //**image upload to firebase **//
+  const handleUploadImage = async() => {
+    const storage = getStorage(app)
+    const fileName = new Date().getTime() + imageFile?.name
+    const storageRef = ref(storage, 'profile_images/' + fileName);
+    const uploadTask = uploadBytesResumable(storageRef, imageFile);
+    
+    uploadTask.on('state_changed',
+      (snapshot) => {
+        // Get task progress
+        const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+        console.log('Upload is ' + progress + '% done');
+        toast.info('uploading... please wait')
+      }, 
+      (error) => {
+        toast.error('File must be less than 2MB')
+        console.log(error)
+      }, 
+      () => {
+        // Upload completed successfully
+        getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
+          setUpdateData({...updateData, profilePicture: downloadURL})
+          toast.success('Image upload successfull')
+        });
+      }
+    );
+  }
+  
   const [updateData, setUpdateData] = useState<UpdateData>({
-    userName: 'avishka97',
-    email: 'avishka97@gmail.com',
-    password: ''
+    userName: userData?.userData.userName || '',
+    email: userData?.userData.email || '',
+    password: '',
+    profilePicture: ''
   })
   
   const handleChange = (e: ChangeEvent<HTMLInputElement>) =>{
@@ -30,7 +83,8 @@ const ProfileSection = () => {
 
   const [errors, setErrors] = useState<InputErrors>({})
   
-  const handleUpdate = (e: FormEvent) =>{
+  //**user details upload to database **//
+  const handleUpdate = async(e: FormEvent) =>{
     e.preventDefault()
 
     const validationErrors: InputErrors = {}
@@ -49,14 +103,20 @@ const ProfileSection = () => {
     
     setErrors(validationErrors)
     if(Object.keys(validationErrors).length === 0) {
-      console.log(updateData);
+      const response = await userUpdateData(updateData)
+      toast.success(response.data.message)
     }
   }
+ 
   return (
     <form onSubmit={handleUpdate} className="flex flex-col w-1/3 gap-6 max-lg:w-1/2 max-sm:w-2/3">
       <div className="flex flex-col items-center gap-5 text-3xl font-semibold max-md:text-2xl">
         <h2>Profile</h2>
-        <img src={testImg} alt="user" className='object-cover w-32 h-32 border rounded-full' />
+        <input type='file' accept='image/*' onChange={handleImageChange} ref={imageFileRef} hidden />
+          <img src={imageFileUrl || userData.userData.profilePicture} alt="user" 
+            onClick={()=> imageFileRef.current.click()}
+            className='object-cover w-32 h-32 border rounded-full' 
+          />
       </div>
       <div>
         <input onChange={handleChange} type="text" name="userName" id="userName" className={inputStyles} value={updateData.userName} />
@@ -75,6 +135,7 @@ const ProfileSection = () => {
         <p className='cursor-pointer '>Delete Account</p>
         <p className='cursor-pointer '>Sign out</p>
       </div>
+      <ToastContainer />
      </form>
   )
 }
