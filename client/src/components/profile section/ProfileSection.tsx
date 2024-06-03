@@ -113,7 +113,7 @@ const ProfileSection = () => {
       <div className="flex flex-col items-center gap-5 text-3xl font-semibold max-md:text-2xl">
         <h2>Profile</h2>
         <input type='file' accept='image/*' onChange={handleImageChange} ref={imageFileRef} hidden />
-          <img src={imageFileUrl || userData.userData.profilePicture} alt="user" 
+          <img src={imageFileUrl || userData?.userData?.profilePicture} alt="user" 
             onClick={()=> imageFileRef.current.click()}
             className='object-cover w-32 h-32 border rounded-full' 
           />
