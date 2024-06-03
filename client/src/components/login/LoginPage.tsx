@@ -4,6 +4,7 @@ import OAuth from "../Oauth/OAuth";
 import { useSignInUserMutation } from "../../redux/api/userApi";
 import { useDispatch } from "react-redux";
 import { signInSuccess } from "../../redux/slices/userSlice";
+import { ToastContainer, toast } from 'react-toastify';
 
 const LoginPage = () => {
   const inputStyles = "block bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg  focus:outline-blue-400  w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white  dark:focus:outline-blue-500"
@@ -47,10 +48,16 @@ const LoginPage = () => {
       const response = await loginUserData(loginData)
       console.log(response)
       if(response.data.message === 'Login successfull' ){
+        toast.success(response.data.message)
         dispatch(signInSuccess(true))
         navigate('/')
+        
       }
     }
+  }
+
+  if(isError){
+    toast.error(error?.data?.message)
   }
   
   return (
@@ -76,11 +83,6 @@ const LoginPage = () => {
           <p className="text-gray-500 dark:text-gray-400">
             Don&apos;t have an account yet? <Link to="/signup" className="font-medium text-blue-600 hover:underline dark:text-blue-500">Sign up</Link>
           </p>
-          { isError && 
-          <div className="flex items-center justify-center w-full py-5 text-white bg-red-400 rounded">
-            <p>{error?.data?.message}</p>
-          </div>
-          }
         </form>
       </div>
     </div>
