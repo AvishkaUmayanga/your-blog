@@ -45,13 +45,17 @@ const LoginPage = () => {
     setErrors(validationErrors)
 
     if(Object.keys(validationErrors).length === 0) {
-      const response = await loginUserData(loginData)
-      console.log(response)
-      if(response.data.message === 'Login successfull' ){
-        toast.success(response.data.message)
-        dispatch(signInSuccess(true))
-        navigate('/')
-        
+      try{
+        const response = await loginUserData(loginData)
+        console.log(response)
+        if(response.data.message === 'Login successfull' ){
+          toast.success(response.data.message)
+          dispatch(signInSuccess(true))
+          navigate('/')
+        }
+      }
+      catch(err){
+        console.log(err)
       }
     }
   }
@@ -83,6 +87,7 @@ const LoginPage = () => {
           <p className="text-gray-500 dark:text-gray-400">
             Don&apos;t have an account yet? <Link to="/signup" className="font-medium text-blue-600 hover:underline dark:text-blue-500">Sign up</Link>
           </p>
+          <ToastContainer />
         </form>
       </div>
     </div>
