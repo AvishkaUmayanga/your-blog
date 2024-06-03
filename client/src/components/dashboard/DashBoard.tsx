@@ -8,7 +8,7 @@ import { RootState } from "../../redux/store/store";
 const DashBoard = () => {
   const activeTab = useSelector((state: RootState) => state.sideBarSlice.activeTab)
   return (
-    <div className="flex grow dark:text-white max-sm:flex-col">
+    <div className="flex w-full dark:text-white max-sm:flex-col">
       <SideBar/>
       <div className="flex justify-center my-20 grow">
         {activeTab === 'Profile' && <ProfileSection />}

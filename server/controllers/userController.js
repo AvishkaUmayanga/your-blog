@@ -18,7 +18,6 @@ export const signup = async(req, res) => {
         }
     }
     catch(error){
-        console.log(error)
         return res.status(500).json({error: 'Server error'})
     }
 }
@@ -39,7 +38,7 @@ export const signIn = async(req, res) => {
             else{
                 const user = {userId: existingUser._id, isAdmin: existingUser.isAdmin }
                 const token = jwt.sign(user, process.env.TOKEN_KEY)
-                return res.cookie('token', token, { httpOnly: true }).status(200).json({ message: 'Login successfull' })
+                res.cookie('token', token, { httpOnly: true, path: '/'}).status(200).json({ message: 'Login successfull' })
             }
         }
     }
@@ -70,7 +69,59 @@ export const googleSignIn = async(req, res) => {
             await newUser.save()
             const user = {userId: newUser._id, isAdmin: newUser.isAdmin}
             const token = jwt.sign(user, process.env.TOKEN_KEY)
-            return res.cookie('token', token, {httpOnly: true}).status(200).json({ message: 'Login successfull' })
+            return res.cookie('token', token, {httpOnly: true, path: '/',}).status(200).json({ message: 'Login successfull' })
+        }
+    }
+    catch(error){
+        return res.status(500).json({error: 'Server error'})
+    }
+}
+
+//signout
+
+//get user details
+export const userDetails = async(req, res) => {
+    try{
+        const userId = req.user.userId
+        if(userId){
+            const user = await userModel.findById({_id: userId})
+            const userData = {userName: user.userName, email: user.email, profilePicture: user.profilePicture}
+            return res.status(200).json({userData})
+        }
+    }
+    catch(error){
+        console.log(error)
+        return res.status(500).json({error: 'Server error'})
+    }
+}
+
+//update user
+export const updateUer = async(req, res) => {
+    try{
+        const userId = req.user.userId
+        const {email, password, userName, profilePicture} = req.body
+        if(userId){
+            const user = await userModel.findById({_id: userId})
+            if(user){
+                const passwordMatch = await bcrypt.compare(password, user.password)
+                const updateData = {}
+                if(!passwordMatch){
+                    return res.status(401).json({message:'Invalid password'})
+                }
+                else{
+                    if(userName){
+                        updateData.userName = userName
+                    }
+                    if(email){
+                        updateData.email = email
+                    }
+                    if(profilePicture){
+                        updateData.profilePicture = profilePicture
+                    }
+                    await userModel.findByIdAndUpdate( userId, updateData)
+                    return res.status(200).json({ message: 'updated successfully' })
+                }
+            } 
         }
     }
     catch(error){

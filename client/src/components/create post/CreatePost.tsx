@@ -7,6 +7,7 @@ import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { addTitle, addPostBody, removeBodyItem } from "../../redux/slices/postSlice";
 import { RootState } from "../../redux/store/store";
+import { useCreateNewPostMutation } from "../../redux/api/postApi";
 
 const CreatePost = () => {
     const inputStyles = "block bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg  focus:outline-blue-400  w-full p-3 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white  dark:focus:outline-blue-500 max-sm:p-2"
@@ -17,7 +18,7 @@ const CreatePost = () => {
     const title = useSelector((state: RootState) => state.postSlice.title)
     const postBody = useSelector((state: RootState) => state.postSlice.postBody)
     const dispatch = useDispatch()
-
+    const [postData] = useCreateNewPostMutation()
     const handleAddTitle = () => {
       dispatch(addTitle(titleInput))
       setTitleInput('')
@@ -26,6 +27,16 @@ const CreatePost = () => {
     const handleAddPostBody = () => {
       dispatch(addPostBody({postBodyInput, textType}))
       setPostBodyInput('')
+    }
+
+    const handlePostSubmit = async() => {
+      try{
+        const allData = {title, postBody}
+        await postData(allData)
+      }
+      catch(error){
+        console.log(error)
+      }
     }
 
     return (
@@ -72,7 +83,7 @@ const CreatePost = () => {
             <button onClick={handleAddPostBody} className="px-3 text-white duration-200 bg-blue-500 rounded-md hover:scale-105">add</button>
           </div> 
         </div>
-        <SubmitButton buttonTxt='Publish' />
+        <SubmitButton onClick={handlePostSubmit} buttonTxt='Publish' />
       </div>
     </div>
     )
