@@ -6,10 +6,14 @@ import testImg from '../../assets/userTest.png'
 import { IoMdClose } from "react-icons/io";
 import { useSelector } from "react-redux";
 import { RootState } from "../../redux/store/store";
+import { useGetUserDetailsQuery } from "../../redux/api/userApi";
 
 const Header= () => {
  const isLoggedIn = useSelector((state: RootState) => state.userSlice.isLoggedIn) 
  const [isOpen, setIsOpen] = useState<boolean>(false)
+ const { data } = useGetUserDetailsQuery({})
+ 
+ const profileImg = data?.userData?.profilePicture
  
  const toggleMenu = () =>{
     setIsOpen(!isOpen)
@@ -33,7 +37,7 @@ const Header= () => {
           <Link to='/login'><button className="flex items-center justify-center px-5 py-1 rounded-full cursor-pointer max-sm:px-3 max-sm:text-sm hover:bg-gradient-to-br from-[#020024] via-[#090979] to-[#00d4ff] duration-300 hover:scale-95 text-white bg-slate-900 font-medium dark:bg-gray-50 dark:text-black dark:hover:text-white">Login</button></Link>
         }
         { isLoggedIn && 
-          <Link to='/dashboard'><div className="flex items-center justify-center p-1 bg-white rounded-full w-9 max-sm:w-8"><img src={testImg} alt="user" /></div></Link>
+          <Link to='/dashboard'><div className="flex items-center justify-center p-0.5 bg-white rounded-full "><img src={profileImg} alt="user" className="object-cover rounded-full w-9 h-9 max-sm:w-8 max-sm:h-8" /></div></Link>
         }
         <div className="w-6 ">
           {isOpen ?

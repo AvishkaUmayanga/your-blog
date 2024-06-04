@@ -95,7 +95,7 @@ export const userDetails = async(req, res) => {
         const userId = req.user.userId
         if(userId){
             const user = await userModel.findById({_id: userId})
-            const userData = {userName: user.userName, email: user.email, profilePicture: user.profilePicture}
+            const userData = {userName: user.userName, email: user.email, profilePicture: user.profilePicture, isAdmin: user.isAdmin}
             console.log(userData)
             return res.status(200).json({userData})
         }
