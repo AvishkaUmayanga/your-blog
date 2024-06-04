@@ -1,7 +1,7 @@
-import { ChangeEvent,  FormEvent, useState } from "react";
+import { ChangeEvent,  FormEvent, useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import OAuth from "../Oauth/OAuth";
-import { useSignInUserMutation } from "../../redux/api/userApi";
+import  { useSignInUserMutation } from "../../redux/api/userApi";
 import { useDispatch } from "react-redux";
 import { signInSuccess } from "../../redux/slices/userSlice";
 import { ToastContainer, toast } from 'react-toastify';
@@ -32,7 +32,8 @@ const LoginPage = () => {
     const {name, value} = e.target
     setLoginData({...loginData, [name]: value})
   }
-  
+ 
+//** submit login data and validation**/  
   const handleSubmit = async(e: FormEvent) =>{
     e.preventDefault()
     const validationErrors: Errors = {}
@@ -47,7 +48,6 @@ const LoginPage = () => {
     if(Object.keys(validationErrors).length === 0) {
       try{
         const response = await loginUserData(loginData)
-        console.log(response)
         if(response.data.message === 'Login successfull' ){
           toast.success(response.data.message)
           dispatch(signInSuccess(true))
@@ -59,10 +59,13 @@ const LoginPage = () => {
       }
     }
   }
-
-  if(isError){
-    toast.error(error?.data?.message)
-  }
+  
+  useEffect(()=> {
+    if(isError){
+      toast.error(error?.data?.message)
+    }
+  },[isError, error])
+  
   
   return (
     <div className="flex items-center justify-center w-full my-32 lg:my-20">

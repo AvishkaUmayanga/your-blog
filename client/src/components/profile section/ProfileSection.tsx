@@ -8,12 +8,12 @@ import { ToastContainer, toast } from 'react-toastify';
 const ProfileSection = () => {
   const inputStyles = "block bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg  focus:outline-blue-400  w-full p-3 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white  dark:focus:outline-blue-500 max-sm:p-2"
   
-  const { data: userData } = useGetUserDetailsQuery({})
+  const { data: userData, isSuccess } = useGetUserDetailsQuery({})
   const [imageFile, setImageFile] = useState<File >()
   const [imageFileUrl, setImageFileUrl] = useState<string | null>(null)
-  const [userUpdateData] = useUpdateUserMutation()
+  const [userUpdateData, {isError, error}] = useUpdateUserMutation()
   const imageFileRef = useRef()
-  
+
   interface UpdateData{
     userName: string,
     email: string,
@@ -70,12 +70,24 @@ const ProfileSection = () => {
   }
   
   const [updateData, setUpdateData] = useState<UpdateData>({
-    userName: userData?.userData.userName || '',
-    email: userData?.userData.email || '',
+    userName: '',
+    email: '',
     password: '',
-    profilePicture: ''
+    profilePicture: '',
   })
-  
+console.log(userData?.userData)
+//**get user data**//
+  useEffect(() => {
+    if (isSuccess && userData) {
+      setUpdateData({
+        userName: userData.userData.userName ,
+        email: userData.userData.email ,
+        password: '',
+        profilePicture: userData.userData?.profilePicture,
+      });
+    }
+  }, [isSuccess, userData]);
+  console.log(updateData)
   const handleChange = (e: ChangeEvent<HTMLInputElement>) =>{
     const {name, value} = e.target
     setUpdateData({...updateData, [name]: value})
@@ -83,7 +95,7 @@ const ProfileSection = () => {
 
   const [errors, setErrors] = useState<InputErrors>({})
   
-  //**user details upload to database **//
+//**user details upload to database **//
   const handleUpdate = async(e: FormEvent) =>{
     e.preventDefault()
 
@@ -107,27 +119,33 @@ const ProfileSection = () => {
       toast.success(response.data.message)
     }
   }
- 
+  
+  useEffect(()=>{
+    toast.error(error?.data?.message)
+  }, [isError, error])
+
   return (
+    <>
+    {isSuccess && (
     <form onSubmit={handleUpdate} className="flex flex-col w-1/3 gap-6 max-lg:w-1/2 max-sm:w-2/3">
       <div className="flex flex-col items-center gap-5 text-3xl font-semibold max-md:text-2xl">
         <h2>Profile</h2>
         <input type='file' accept='image/*' onChange={handleImageChange} ref={imageFileRef} hidden />
-          <img src={imageFileUrl || userData?.userData?.profilePicture} alt="user" 
+          <img src={imageFileUrl || updateData?.profilePicture} alt="user" 
             onClick={()=> imageFileRef.current.click()}
             className='object-cover w-32 h-32 border rounded-full' 
           />
       </div>
       <div>
-        <input onChange={handleChange} type="text" name="userName" id="userName" className={inputStyles} value={updateData.userName} />
+        <input onChange={handleChange} type="text" name="userName" id="userName" className={inputStyles} value={updateData?.userName} />
         {errors.userName && <span className="text-red-500 ">{errors.userName}</span>}
       </div>
       <div>
-        <input onChange={handleChange} type="email" name="email" id="email" className={inputStyles} value={updateData.email} />
+        <input onChange={handleChange} type="email" name="email" id="email" className={inputStyles} value={updateData?.email} />
         {errors.email && <span className="text-red-500 ">{errors.email}</span>}
       </div>
       <div>
-        <input onChange={handleChange} type="password" name="password" id="password" className={inputStyles} value={updateData.password} />
+        <input onChange={handleChange} type="password" name="password" id="password" className={inputStyles} value={updateData?.password} />
         {errors.password && <span className="text-red-500 ">{errors.password}</span>}
       </div>
       <SubmitButton buttonTxt='Update'/>
@@ -137,6 +155,8 @@ const ProfileSection = () => {
       </div>
       <ToastContainer />
      </form>
+     )}
+     </>
   )
 }
 

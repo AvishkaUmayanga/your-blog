@@ -5,14 +5,18 @@ import jwt from 'jsonwebtoken'
 //signup
 export const signup = async(req, res) => {
     try{
-        const {email, password, ...rest} = req.body
+        const {email, password, userName} = req.body
         const existingUser = await userModel.findOne({email})
+        const existingUserName = await userModel.findOne({userName})
         if(existingUser){
             return res.status(400).json({message: 'Email already exists'})
         }
+        if(existingUserName){
+            return res.status(400).json({message: 'Username already exists'})
+        }
         else{
             const hashedPassword = await bcrypt.hash(password,10)
-            const newUser = new userModel({email, password:hashedPassword, ...rest})
+            const newUser = new userModel({email, password:hashedPassword, userName})
             await newUser.save()
             return res.status(201).json({message: 'Signup successfull'})
         }
@@ -59,9 +63,10 @@ export const googleSignIn = async(req, res) => {
         }
         else{
             const generatedPassword =  process.env.TOKEN_KEY
-            const hashedPassword =  bcrypt.hash(generatedPassword,10)
+            const hashedPassword = await bcrypt.hash(generatedPassword,10)
+            const firstName = userName.split(' ')[0]
             const newUser = new userModel({
-                userName: userName.toLowerCase(),
+                userName: firstName.toLowerCase() + Math.floor(Math.random()*100),
                 email,
                 password: hashedPassword,
                 profilePicture: googleProfileImg
@@ -69,15 +74,20 @@ export const googleSignIn = async(req, res) => {
             await newUser.save()
             const user = {userId: newUser._id, isAdmin: newUser.isAdmin}
             const token = jwt.sign(user, process.env.TOKEN_KEY)
-            return res.cookie('token', token, {httpOnly: true, path: '/',}).status(200).json({ message: 'Login successfull' })
+            return res.cookie('token', token, {httpOnly: true}).status(200).json({ message: 'Login successfull' })
         }
     }
     catch(error){
+        console.log(error)
         return res.status(500).json({error: 'Server error'})
     }
 }
 
 //signout
+export const signOut = async(req, res) => {
+    res.clearCookie('token')
+    return res.status(200).json({ message: 'Logout successfull' })
+}
 
 //get user details
 export const userDetails = async(req, res) => {
@@ -86,6 +96,7 @@ export const userDetails = async(req, res) => {
         if(userId){
             const user = await userModel.findById({_id: userId})
             const userData = {userName: user.userName, email: user.email, profilePicture: user.profilePicture}
+            console.log(userData)
             return res.status(200).json({userData})
         }
     }

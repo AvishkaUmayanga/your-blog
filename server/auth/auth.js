@@ -10,7 +10,6 @@ export const authToken = (req, res, next) => {
             return res.status(403).json({message: 'Forbidden'})
         }
         req.user = user
-        console.log(user)
         next()
     })
 } 
