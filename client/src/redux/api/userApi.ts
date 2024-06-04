@@ -19,7 +19,10 @@ const userApi = createApi({
                 url: '/signIn',
                 method: 'POST',
                 body
-            })
+            }),
+            invalidatesTags: () => {
+                return [{type:'data', id:'userData'}]
+            }
         }),
 
         googleSignIn: builder.mutation({
@@ -27,7 +30,10 @@ const userApi = createApi({
                 url: '/google',
                 method: 'POST',
                 body
-            })
+            }),
+            invalidatesTags: () => {
+                return [{type:'data', id:'userData'}]
+            }
         }),
 
         getUserDetails: builder.query({
@@ -49,9 +55,16 @@ const userApi = createApi({
             invalidatesTags: () => {
                 return [{type:'data', id:'userData'}]
             }
-        })
+        }),
+
+        signOut: builder.mutation({
+            query: () => ({
+                url: '/signout',
+                method: 'POST'
+            }),
+        }),
     })
 })
 
-export const { useSignupUserMutation, useSignInUserMutation, useGoogleSignInMutation, useGetUserDetailsQuery, useUpdateUserMutation } = userApi
+export const { useSignupUserMutation, useSignInUserMutation, useGoogleSignInMutation, useGetUserDetailsQuery, useUpdateUserMutation, useSignOutMutation } = userApi
 export default userApi

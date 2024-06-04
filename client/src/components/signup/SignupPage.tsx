@@ -1,7 +1,8 @@
-import { ChangeEvent, FormEvent, useState } from "react";
+import { ChangeEvent, FormEvent, useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useSignupUserMutation } from "../../redux/api/userApi";
 import OAuth from "../Oauth/OAuth";
+import { ToastContainer, toast } from 'react-toastify';
 
 const SignupPage = () => {
   const inputStyle = "block bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg  focus:outline-blue-400  w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white  dark:focus:outline-blue-500"
@@ -35,6 +36,7 @@ const SignupPage = () => {
     setFormData({...formData, [name]: value})
   }
   
+//** submit signup details and validation */
   const handleSubmit = async(e: FormEvent) =>{
     e.preventDefault()
     const validationErrors: InputErrors = {}
@@ -64,12 +66,24 @@ const SignupPage = () => {
     setErrors(validationErrors)
     
     if(Object.keys(validationErrors).length === 0) {
-      const response =  await signupDetails(formData)
-      if(response.data.message === 'Signup successfull'){
-        navigate('/login')
+      try{
+        const response =  await signupDetails(formData)
+        console.log(response)
+        if(response.data.message === 'Signup successfull'){
+          navigate('/login')
+        }
+      }
+      catch(err){
+        console.log(err)
       }
     }
   }
+  
+  useEffect(() => {
+    if (isError && error) {
+      toast.error(error?.data?.message)
+    }
+  }, [isError, error])
   
   return (
     <div className="flex items-center justify-center w-full my-32 lg:my-10">
@@ -101,11 +115,7 @@ const SignupPage = () => {
           <p className="text-gray-500 dark:text-gray-400">
             Already have an account? <Link to="/login" className="font-medium text-blue-600 hover:underline dark:text-blue-500">Login</Link>
           </p>
-          { isError && (
-          <div className="flex items-center justify-center w-full py-5 text-white bg-red-400 rounded">
-            <p>{error?.data?.message}</p>
-          </div> 
-         )}
+          <ToastContainer />
         </form>
       </div>
     </div>
