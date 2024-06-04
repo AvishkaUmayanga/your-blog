@@ -45,8 +45,8 @@ const ProfileSection = () => {
   const handleUploadImage = async() => {
     const storage = getStorage(app)
     const fileName = new Date().getTime() + imageFile?.name
-    const storageRef = ref(storage, 'profile_images/' + fileName);
-    const uploadTask = uploadBytesResumable(storageRef, imageFile);
+    const storageRef = ref(storage, 'profile_images/' + fileName)
+    const uploadTask = uploadBytesResumable(storageRef, imageFile)
     
     uploadTask.on('state_changed',
       (snapshot) => {
