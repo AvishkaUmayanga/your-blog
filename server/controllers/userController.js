@@ -96,12 +96,10 @@ export const userDetails = async(req, res) => {
         if(userId){
             const user = await userModel.findById({_id: userId})
             const userData = {userName: user.userName, email: user.email, profilePicture: user.profilePicture, isAdmin: user.isAdmin}
-            console.log(userData)
             return res.status(200).json({userData})
         }
     }
     catch(error){
-        console.log(error)
         return res.status(500).json({error: 'Server error'})
     }
 }
