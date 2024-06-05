@@ -75,7 +75,7 @@ const ProfileSection = () => {
     password: '',
     profilePicture: '',
   })
-console.log(userData?.userData)
+
 //**get user data**//
   useEffect(() => {
     if (isSuccess && userData) {

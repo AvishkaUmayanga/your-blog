@@ -5,9 +5,19 @@ const postApi = createApi({
     tagTypes: ['data'],
     baseQuery: fetchBaseQuery({ baseUrl:'http://localhost:4000/api', credentials: 'include'}),
     endpoints: builder => ({
+        getAllPosts: builder.query({
+            query: () => ({
+                url: '/all_posts',
+                method: 'get',
+            }),
+            providesTags:() => {
+                return [{type:'data', id:'postId'}]
+            }
+        }),
+
         createNewPost: builder.mutation({
             query: (body) => ({
-                url: 'create_post',
+                url: '/create_post',
                 method: 'post',
                 body
             }),
@@ -15,15 +25,6 @@ const postApi = createApi({
                 return [{type:'data', id:'postId'}]
             }
         }),
-        getAllPosts: builder.query({
-            query: () => ({
-                url: 'get_posts',
-                method: 'get',
-            }),
-            providesTags:() => {
-                return [{type:'data', id:'postId'}]
-            }
-        })
     })
 })
 
